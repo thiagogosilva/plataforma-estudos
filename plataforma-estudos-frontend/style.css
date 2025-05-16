@@ -1,0 +1,83 @@
+/* Reset e base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: "Segoe UI", sans-serif;
+    background-color: #f5f7fb;
+    color: #333;
+    padding: 20px;
+}
+
+/* Cabeçalho */
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+head h1 {
+    color: #1d3557;
+    font-size: 2rem;
+}
+
+header p {
+    margin-top: 5px;
+    color: #555;
+}
+
+/* Container dos resumos */
+#resumos-container{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+/* Card de resumo*/
+.resumo-card {
+    background-color: #fff;
+    padding: 20px;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s;
+}
+
+.resumo-card:hover {
+    transform: translateY(-5px);
+}
+
+.resumo-card h2 {
+    font-size: 1.2rem;
+    color: #2a2a2a;
+    margin-bottom: 10px;
+}
+
+.resumo-card p {
+    margin-bottom: 10px;
+    line-height: 1.4;
+}
+
+.resumo-card smamll {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+/* Mensagem de status */
+.loading,
+.erro {
+    text-align: center;
+    font-size: italic;
+    color: #888;
+    padding: 10px;
+}
+
+/* Rodapé */
+footer {
+    margin-top: 40px;
+    text-align: center;
+    font-size: 0.9rem;
+    color: #999;
+}
