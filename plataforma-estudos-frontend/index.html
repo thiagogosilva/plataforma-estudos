@@ -11,11 +11,35 @@
 <body>
     <header>
         <h1>📚 Plataforma de Estudos</h1>
-        <p>Veja abaixo os resumos cadastrados:</p>
     </header>
 
     <main>
         <!-- Container onde os resumos serão carregados dinamicamente -->
+        <section id="formulario-cadastro">
+            <h2>➕ Adicionar novo resumo</h2>
+            <form id="form-resumo">
+                <div>
+                    <label for="titulo">Título:</label>
+                    <input type="text" id="titulo" name="titulo" required />
+                </div>
+
+                <div>
+                    <label for="conteudo">Conteudo:</label>
+                    <textarea id="conteudo" name="conteudo" rows="4" required></textarea>
+                </div>
+
+                <div>
+                    <label for="tags">Tags (separadas por vírgula):</label>
+                    <input type="text" id="tags" name="tags" />
+                </div>
+                
+                <button type="submit">Cadastrar Resumo</button>
+                <p id="mensagem-status"></p>
+            </form>
+        </section>
+
+        <p class="subtitulo-resumos">Veja abaixo os resumos cadastrados:</p>
+
         <section id="resumos-container">
             <p class="loading">🔁 Carregando resumos...</p>
         </section>

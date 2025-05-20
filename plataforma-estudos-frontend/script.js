@@ -40,5 +40,63 @@ async function carregarResumos() {
     }
 }
 
+// Nova função para lidar com o envio do formulário
+function configurarFormulario() {
+    const form = document.getElementById('form-resumo');
+    const mensagem = document.getElementById('mensagem-status');
+
+    form.addEventListener('submit', async (event) => {
+        event.preventDefault(); // Evita o carregamento da página
+
+        // Captura os valores dos campos
+        const titulo = document.getElementById('titulo').value.trim();
+        const conteudo = document.getElementById('conteudo').value.trim();
+        const tagsTexto = document.getElementById('tags').value.trim();
+        const tags = tagsTexto ? tagsTexto.split(',').map(tag => tag.trim()) : [];
+        
+        // Validação simples (só para garantir)
+        if (!titulo || !conteudo) {
+            mensagem.textContent = 'Preencha todos os campos obrigatórios.';
+            mensagem.style.color = 'red';
+            return;
+        }
+
+        try {
+            // Envia para o backend com fetch (POST)
+            const resposta = await fetch('http://localhost:5000/resumos', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ titulo, conteudo, tags }),
+            });
+
+            if (!resposta.ok) {
+                throw new Error('Erro ao cadastrar resumo.');
+            }
+
+            // Limpa campos e exibe mensagem
+            form.reset();
+            mensagem.textContent = 'Resumo cadastrado com sucesso!';
+            mensagem.style.color = 'green';
+
+            // Atualiza a lista automaticamente
+            carregarResumos();
+
+            // Remove a mensagem após 3 segundos
+            setTimeout(() => {
+                mensagem.textContent = '';
+            }, 3000);
+        } catch (erro) {
+            console.error(erro);
+            mensagem.textContent = ' Erro ao cadastrar resumo.';
+            mensagem.style.color = 'red';
+        }
+    });
+}
+
 // Executa a função assim que a página carregar
-document.addEventListener('DOMContentLoaded', carregarResumos);
+document.addEventListener('DOMContentLoaded', () => {
+    carregarResumos();
+    configurarFormulario(); // Adiciona o listener ao formulário
+});

@@ -81,3 +81,67 @@ footer {
     font-size: 0.9rem;
     color: #999;
 }
+
+/* ==== Formulário de Cadastro === */
+
+#formulario-cadastro {
+    margin-bottom: 40px;
+    background-color: #ffffff;
+    padding: 20px;
+    border: 1px solid;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+#formulario-cadastro h2 {
+    margin-bottom: 15px;
+    color: #1d3557;
+    font-size: 1.3rem;
+}
+
+#formulario-cadastro form div {
+    margin-bottom: 15px;
+}
+
+#formulario-cadastro label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+#formulario-cadastro input,
+#formulario-cadastro textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #cccccc;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+#formulario-cadastro button {
+    padding: 10px 16px;
+    font-size: 1rem;
+    background-color: #457b9d;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#formulario-cadastro button:hover {
+    background-color: #1d3557;
+}
+
+#mensagem-status {
+    margin-top: 10px;
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+.subtitulo-resumos {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 10px;
+    color: #333;
+}
