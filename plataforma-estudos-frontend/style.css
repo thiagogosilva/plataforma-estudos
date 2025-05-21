@@ -93,6 +93,16 @@ footer {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
+#formulario-cadastro button + #cancelar-edicao {
+    margin-left: 10px;
+    background-color: #ccc;
+    color: #333;
+}
+
+#formulario-cadastro button + #cancelar-edicao:hover {
+    background-color: #aaa;
+}
+
 #formulario-cadastro h2 {
     margin-bottom: 15px;
     color: #1d3557;
