@@ -53,7 +53,7 @@ Este repositório conterá **todo código-fonte da aplicação**, incluindo:
  - `/docs` - documentaçao técnica e de rotas
  - `README.md` - apresentação e escopo do projeto
 
-As **anotações diárias de desenvolvimento** continuarão sendo registradas no repositório do [Desafio 90 dia Estagiário DEV](https://github.com/thiagogosilva/desafio-90dias-dev) na respectiva pasta de cada dia.
+As **anotações diárias de desenvolvimento** continuarão sendo registradas no repositório do [Desafio 90 dias Estagiário DEV](https://github.com/thiagogosilva/desafio-90dias-dev) na respectiva pasta de cada dia.
 
  ---
 
