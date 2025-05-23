@@ -71,6 +71,57 @@ try {
     }
 }
 
+// Função principal para buscar e exibir os flashcards
+async function carregarFlashcards() {
+    const container = document.getElementById('flashcards-container');
+
+    try {
+        const resposta = await fetch('http://localhost:5000/flashcards');
+        if(!resposta.ok) throw new Error('Erro ao buscar flashcards');
+
+        const flashcards = await resposta.json();
+
+        container.innerHTML = '<h2>🧠 Flashcards cadastrados</h2>';
+
+        if (flashcards.length === 0) {
+            container.innerHTML += '<p>Nenhum flashcard encontrado.</p>';
+            return;
+        }
+
+        flashcards.forEach((card) => {
+            const cardDiv = document.createElement('div');
+            cardDiv.classList.add('flashcard');
+
+            cardDiv.innerHTML = `
+            <p><strong>Pergunta:</strong> ${card.pergunta}</p>
+            <p class="resposta"><strong>Resposta:</strong> ${card.resposta}</p>
+            <small>Tags: ${card.tags.join(', ')}</small><br />
+            <button class="mostrar-resposta">👁️ Mostrar resposta</button>
+            `;
+
+            const botao = cardDiv.querySelector('.mostrar-resposta');
+            const resposta = cardDiv.querySelector('.resposta');
+
+            botao.addEventListener('click', () => {
+                const mostrando = cardDiv.classList.contains('mostrar');
+
+                if (mostrando) {
+                    cardDiv.classList.remove('mostrar');
+                    botao.textContent = '👁️ Mostrar resposta'
+                } else {
+                    cardDiv.classList.add('mostrar');
+                    botao.textContent = '🙈 Ocultar resposta'
+                }
+            });
+
+            container.appendChild(cardDiv);
+        });
+    } catch (erro) {
+        container.innerHTML = '<p class="erro">Erro ao carregar os flashcards 😥</p>';
+        console.error('Erro ao carregar os flashcards:', erro.message);
+    }
+}
+
 // Variável de controle para saber se estamos editando
 let idResumoEditando = null;
 
@@ -115,6 +166,8 @@ function configurarFormulario() {
     idResumoEditando = null;
     botao.textContent = 'Cadastrar Resumo';
 
+    document.getElementById('cancelar-edicao').style.display = 'none';
+
     mensagem.textContent = modoEdicao
         ? 'Resumo editado com sucesso!'
         : 'Resumo cadastrado com sucesso!';
@@ -156,4 +209,5 @@ function prepararEdicaoResumo(resumo) {
 document.addEventListener('DOMContentLoaded', () => {
     configurarFormulario();
 carregarResumos();
+carregarFlashcards();
 });

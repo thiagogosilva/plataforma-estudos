@@ -155,3 +155,59 @@ footer {
     margin-bottom: 10px;
     color: #333;
 }
+
+/* ==== Flashcards ==== */
+
+#flashcards-container {
+    margin-top: 40px;
+}
+
+.flashcard {
+    background-color: #f8f9fa;
+    border: 1px solid #ccc;
+    padding: 16px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    box-shadow: 0 1 px 6px rgba(0, 0, 0, 0.04);
+}
+
+.flashcard p {
+    margin: 8px 0;
+}
+
+.flashcard button.mostrar-resposta {
+    margin-top: 8px;
+    padding: 6px 10px;
+    font-size: 0.95rem;
+    border: none;
+    border-radius: 6px;
+    background-color: #1d3557;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.flashcard button.mostrar-resposta:hover {
+    background-color: #457b9d;
+}
+
+/* ==== Interação da resposta de flashcard ==== */
+
+.flashcard .resposta {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+}
+
+.flashcard.mostrar .resposta {
+    max-height: 200px;
+    opacity: 1;
+}
+
+.flashcard.mostrar {
+    background-color: #e8f5e9;
+    border-color: #81c784;
+    box-shadow: 0 2px 8px rgba(129, 199, 132, 0.3);
+}
