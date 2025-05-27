@@ -211,3 +211,46 @@ footer {
     border-color: #81c784;
     box-shadow: 0 2px 8px rgba(129, 199, 132, 0.3);
 }
+
+#flashcard-form {
+    margin-top: 40px;
+    padding: 20px;
+    background-color: #f3f3f3;
+    border-radius: 10px;
+}
+
+#flashcard-form h2 {
+    margin-bottom: 10px;
+}
+
+#form-flashcard label {
+    display: block;
+    margin: 10px 0 5px;
+    font-weight: bold;
+}
+
+#form-flashcard input, #form-flashcard textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+#form-flashcard button {
+    background-color: #4caf50;
+    color: white;
+    padding: 10px 18px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#form-flashcard button:hover {
+    background-color: #45a049;
+}
+
+#mensagem-falshcard {
+    margin-top: 10px;
+    font-weight: bold;
+}

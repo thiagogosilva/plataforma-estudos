@@ -13,11 +13,12 @@ exports.getFlashcards = async (req, res) => {
 // POST /flashcards - Criar um novo flashcard
 exports.createFlashcard = async (req, res) => {
     try {
+        console.log('🛠️ Dados recebidos:', req.body);
         const novoFlashcard = new Flashcard(req.body);
         await novoFlashcard.save();
         res.status(201).json(novoFlashcard);
     } catch (err) {
-        res.status(400).json({ erro: 'Erro ao criar Flashcard' });
+        res.status(400).json({ erro: 'Erro ao criar Flashcard', detalhes: err.message });
     }
 };
 

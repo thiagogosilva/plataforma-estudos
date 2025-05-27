@@ -39,10 +39,28 @@
             </form>
         </section>
 
-        <p class="subtitulo-resumos">Veja abaixo os resumos cadastrados:</p>
+        <p class="subtitulo-resumos">📝 Veja abaixo os resumos cadastrados:</p>
 
         <section id="resumos-container">
             <p class="loading">🔁 Carregando resumos...</p>
+        </section>
+
+        <section id="flashcard-form">
+            <h2> 🆕 Cadastrar Novo Flashcard</h2>
+            <form id="form-flashcard">
+                <label for="pergunta">Pergunta:</label>
+                <input type="text" id="pergunta" name="pergunta" required />
+
+                <label for="resposta">Resposta:</label>
+                <textarea id="resposta" name="resposta" rows="4" required></textarea>
+
+                <label for="tags">Tags (opcional):</label>
+                <input type="text" id="tags-flashcard" name="tags" placeholder="ex: javascript, lógica" />
+
+                <button type="submit">Salvar Flashcard</button>
+
+                <p id="mensagem-flashcard" style="display: none;"></p>
+            </form>
         </section>
 
         <section id="flashcards-container">
