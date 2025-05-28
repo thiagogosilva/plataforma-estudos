@@ -254,3 +254,45 @@ footer {
     margin-top: 10px;
     font-weight: bold;
 }
+
+.resumo-destaque {
+    animation: destaqueResumo 1.5s ease;
+    border: 2px solid #007bff;
+    box-shadow: 0 0 10px #007bff;
+}
+
+@keyframes destaqueResumo {
+    0% {
+        transform: scale(1);
+        opacity: 0.3;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.flashcard-destaque {
+    animation: destaqueFlashcard 1.5s ease;
+    border: 2px solid #4caf50;
+    box-shadow: 0 0 10px #4caf50;
+}
+
+@keyframes destaqueFlashcard {
+    0%{
+        transform: scale(1);
+        opacity: 0.3;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}

@@ -17,6 +17,8 @@ try {
         const card = document.createElement('div');
         card.classList.add('resumo-card');
 
+    card._id = resumo._id;
+
     card.innerHTML = `
         <h2>${resumo.titulo}</h2>
         <p>${resumo.conteudo}</p>
@@ -52,6 +54,18 @@ try {
         });
 
         container.appendChild(card);
+
+        if (
+            typeof window.idUltimoResumoModificado !== "undefined" &&
+            resumo._id === window.idUltimoResumoModificado
+        ) {
+            card.classList.add('resumo-destaque');
+
+            setTimeout(() => {
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                setTimeout(() => card.classList.remove('resumo-destaque'), 2000);
+            }, 3000);
+        }
     });
 } catch (erro) {
     container.innerHTML = `<p class="erro">Erro ao carregar os resumos 😥</p>`;
@@ -94,6 +108,16 @@ try {
     });
 
         container.appendChild(div);
+
+        if (typeof window.idUltimoFlashcardCriado !== "undefined" && card._id === window.idUltimoFlashcardCriado) {
+        div.classList.add('flashcard-destaque');
+
+        setTimeout(() => {
+    div.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    // Limpa o destaque após um tempo, se quiser
+    setTimeout(() => div.classList.remove('flashcard-destaque'), 2000);
+    }, 300);
+}
     });
     } catch (erro) {
     container.innerHTML = '<p class="erro">Erro ao carregar os flashcards 😥</p>';
@@ -108,7 +132,9 @@ let idResumoEditando = null;
 function configurarFormulario() {
     const form = document.getElementById('form-resumo');
     const mensagem = document.getElementById('mensagem-status');
-    const botao = form.querySelector('button');
+    const botao = form.querySelector('button[type="submit"]');
+    const cancelarBtn = document.getElementById('cancelar-edicao');
+
 
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -135,20 +161,26 @@ form.addEventListener('submit', async (event) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ titulo, conteudo, tags })
     });
-        if (!resposta.ok) throw new Error(`Erro ao ${idResumoEditando ? 'editar' : 'cadastrar'} resumo.`);
-
-        form.reset();
-        idResumoEditando = null;
-        botao.textContent = 'Cadastrar Resumo';
-        document.getElementById('cancelar-edicao').style.display = 'none';
+    
+    const resumoSalvo = await resposta.json();
+    if (!resposta.ok) throw new Error(`Erro ao ${idResumoEditando ? 'editar' : 'cadastrar'} resumo.`);
 
     mensagem.textContent = idResumoEditando
         ? 'Resumo editado com sucesso!'
         : 'Resumo cadastrado com sucesso!';
         mensagem.style.color = 'green';
+
+        window.idUltimoResumoModificado = resumoSalvo._id;
+
+        form.reset();
+        idResumoEditando = null;
+        botao.textContent = 'Cadastrar Resumo';
+        cancelarBtn.style.display = 'none';
+
         carregarResumos();
 
-    setTimeout(() => { mensagem.textContent = ''; }, 3000);
+    setTimeout(() => { mensagem.textContent = ''; 
+    }, 3000);
     } catch (erro) {
         console.error(erro);
         mensagem.textContent = erro.message;
@@ -156,24 +188,26 @@ form.addEventListener('submit', async (event) => {
     }
 });
 
-document.getElementById('cancelar-edicao')
-    .addEventListener('click', () => {
-        form.reset();
-        idResumoEditando = null;
-        botao.textContent = 'Cadastrar Resumo';
-        document.getElementById('mensagem-status').textContent = '';
-        document.getElementById('cancelar-edicao').style.display = 'none';
+cancelarBtn.addEventListener('click', () => {
+    form.reset();
+    idResumoEditando = null;
+    botao.textContent = 'Cadastrar Resumo';
+    mensagem.textContent = '';
+    cancelarBtn.style.display = 'none';
     });
 }
 
 // Prepara o formulário para edição de um resumo existente
 function prepararEdicaoResumo(resumo) {
     document.getElementById('titulo').value = resumo.titulo;
-    ocument.getElementById('conteudo').value = resumo.conteudo;
+    document.getElementById('conteudo').value = resumo.conteudo;
     document.getElementById('tags').value = resumo.tags.join(', ');
     document.getElementById('cancelar-edicao').style.display = 'inline-block';
-    idResumoEditando = resumo._id;
-    document.querySelector('#form-resumo button').textContent = 'Salvar Edição';
+    
+    const botao = document.querySelector('#form-resumo button[type="submit"]');
+    botao.textContent = 'Salvar Edição';
+
+idResumoEditando = resumo._id;
 }
 
 // Bloco de cadastro de flashcards
@@ -185,18 +219,41 @@ formFlashcard.addEventListener('submit', async (e) => {
 
     const pergunta = document.getElementById('pergunta').value.trim();
     const resposta = document.getElementById('resposta').value.trim();
-// ATENÇÃO: usa o ID novo "tags-flashcard" para não conflitar
+    
     const tagsString = document.getElementById('tags-flashcard').value.trim();
-    const tagsArray = tagsString ? tagsString.split(',').map(t => t.trim()) : [];
+    const tagsArray = tagsString ? tagsString.split(',').map(tag => tag.trim()) : [];
 
 if (!pergunta || !resposta) {
     mensagemFlashcard.textContent = 'Preencha todos os campos obrigatórios.';
     mensagemFlashcard.style.color = 'red';
     mensagemFlashcard.style.display = 'block';
+    document.getElementById('pergunta').focus();
     return;
 }
 
 try {
+    // Verificar duplicidade
+    const respostaFlashcards = await fetch('http://localhost:5000/flashcards');
+    const listaAtual = await respostaFlashcards.json();
+
+    const jaExiste = listaAtual.some(fc =>
+        fc.pergunta.toLowerCase().trim() === pergunta.toLowerCase().trim()
+    );
+
+    if (jaExiste) {
+        mensagemFlashcard.textContent = 'Essa pergunta ja foi cadastrada.';
+        mensagemFlashcard.style.color = 'red';
+        mensagemFlashcard.style.display = 'block';
+        document.getElementById('pergunta').focus();
+
+            setTimeout(() => {
+        mensagemFlashcard.style.display = 'none';
+        mensagemFlashcard.textContent = '';
+    }, 3000);
+    
+        return;
+    }
+    
     const response = await fetch('http://localhost:5000/flashcards', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -207,6 +264,9 @@ try {
         const errorData = await response.json();
         throw new Error(errorData.erro || errorData.message || 'Erro ao cadastrar flashcard');
     }
+
+    const novoFlashcard = await response.json();
+    window.idUltimoFlashcardCriado = novoFlashcard._id;
 
     mensagemFlashcard.textContent = 'Flashcard cadastrado com sucesso!';
     mensagemFlashcard.style.color = 'green';
@@ -226,7 +286,7 @@ try {
     mensagemFlashcard.textContent = error.message;
     mensagemFlashcard.style.color = 'red';
     mensagemFlashcard.style.display = 'block';
-}
+    }
 });
 
 // Inicialização ao carregar a página
