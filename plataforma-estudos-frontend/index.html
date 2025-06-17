@@ -16,7 +16,7 @@
     <main>
         <!-- Container onde os resumos serão carregados dinamicamente -->
         <section id="formulario-cadastro">
-            <h2>➕ Adicionar novo resumo</h2>
+            <h2>➕ Adicionar Novo Resumo</h2>
             <form id="form-resumo">
                 <div>
                     <label for="titulo">Título:</label>
@@ -46,7 +46,7 @@
         </section>
 
         <section id="flashcard-form">
-            <h2> 🆕 Cadastrar Novo Flashcard</h2>
+            <h2> ➕ Adicionar Novo Flashcard</h2>
             <form id="form-flashcard">
                 <label for="pergunta">Pergunta:</label>
                 <input type="text" id="pergunta" name="pergunta" required />
@@ -57,7 +57,8 @@
                 <label for="tags">Tags (opcional):</label>
                 <input type="text" id="tags-flashcard" name="tags" placeholder="ex: javascript, lógica" />
 
-                <button type="submit">Salvar Flashcard</button>
+                <button type="submit">Cadastrar Flashcard</button>
+                <button type="button" id="cancelar-edicao-flashcard" class="btn-cancelar" style="display: none;">Cancelar Edição</button>
 
                 <p id="mensagem-flashcard" style="display: none;"></p>
             </form>

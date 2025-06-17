@@ -23,19 +23,19 @@ async function carregarResumos() {
                 <h2>${resumo.titulo}</h2>
                 <p>${resumo.conteudo}</p>
                 <small>Tags: ${Array.isArray(resumo.tags) && resumo.tags.length > 0 ? resumo.tags.join(', ') : 'Sem tags'}</small>
-                <br />
-                <button class="editar-btn" data-id="${resumo._id}">✏️ Editar</button>
-                <button class="deletar-btn" data-id="${resumo._id}">🗑️ Excluir</button>
+                <div class="card-actions">
+                    <button class="btn-edit">✏️ Editar</button>
+                    <button class="btn-delete">🗑️ Excluir</button>
             `;
 
             // Botão editar
-            const editarBtn = card.querySelector('.editar-btn');
+            const editarBtn = card.querySelector('.btn-edit');
             if (editarBtn) {
                 editarBtn.addEventListener('click', () => prepararEdicaoResumo(resumo));
             }
 
             // Botão deletar
-            const deletarBtn = card.querySelector('.deletar-btn');
+            const deletarBtn = card.querySelector('.btn-delete');
             if (deletarBtn) {
                 deletarBtn.addEventListener('click', async () => {
                     if (!confirm('Tem certeza que deseja excluir este resumo?')) return;
@@ -81,6 +81,7 @@ async function carregarResumos() {
 }
 
 // Função principal para buscar e exibir os flashcards
+// Função principal para buscar e exibir os flashcards
 async function carregarFlashcards() {
     const container = document.getElementById('flashcards-container');
 
@@ -89,13 +90,8 @@ async function carregarFlashcards() {
         if (!resposta.ok) throw new Error('Erro ao buscar flashcards');
         const flashcards = await resposta.json();
 
-        let tituloFlashcards = container.querySelector('h2');
-        if (!tituloFlashcards) {
-            container.innerHTML = '<h2>🧠 Flashcards cadastrados</h2>';
-        } else {
-            container.querySelectorAll('.flashcard, p').forEach(el => el.remove());
-        }
-
+        // Limpa o container, mas mantém o título H2
+        container.innerHTML = '<h2>🧠 Flashcards cadastrados</h2>';
 
         if (flashcards.length === 0) {
             const p = document.createElement('p');
@@ -104,72 +100,55 @@ async function carregarFlashcards() {
             return;
         }
 
-        flashcards.forEach((cardData) => {
-            const div = document.createElement('div');
-            div.classList.add('flashcard');
+        flashcards.forEach((card) => {
+            // CORRIGIDO: O nome da variável é CardDiv, não div.
+            const CardDiv = document.createElement('div');
+            CardDiv.classList.add('flashcard');
 
-            div.innerHTML = `
-                <p><strong>Pergunta:</strong> ${cardData.pergunta}</p>
-                <p class="resposta"><strong>Resposta:</strong> ${cardData.resposta}</p>
-                <small>Tags: ${Array.isArray(cardData.tags) && cardData.tags.length > 0 ? cardData.tags.join(', ') : 'Sem tags'}</small>
-                <button class="mostrar-resposta">👁️ Mostrar resposta</button>
-                <button class="editar-flashcard">✏️ Editar</button>
+            CardDiv.innerHTML = `
+                <p><strong>Pergunta:</strong> ${card.pergunta}</p>
+                <p class="resposta"><strong>Resposta:</strong> ${card.resposta}</p>
+                <small>Tags: ${Array.isArray(card.tags) && card.tags.length > 0 ? card.tags.join(', ') : 'Sem tags'}</small>
+                <div class="card-actions">
+                    <button class="btn-toggle mostrar-resposta">👁️ Mostrar resposta</button>
+                    <button class="btn-edit">✏️ Editar</button>
+                    <button class="btn-delete">🗑️ Excluir</button>
+                </div>
             `;
-
-            const editarBtn = div.querySelector('.editar-flashcard');
-            if (editarBtn) {
-                editarBtn.addEventListener('click', () => {
-                    document.getElementById('pergunta').value = cardData.pergunta;
-                    document.getElementById('resposta').value = cardData.resposta;
-                    document.getElementById('tags-flashcard').value = Array.isArray(cardData.tags) ? cardData.tags.join(', ') : '';
-                    idFlashcardEditando = cardData._id;
-
-                    if (formFlashcard) {
-                        formFlashcard.querySelector('button[type="submit"]').textContent = 'Salvar edição';
-                    }
-                    if (mensagemFlashcard) {
-                        mensagemFlashcard.textContent = '';
-                        mensagemFlashcard.style.display = 'none';
-                    }
-                    
-                    // Rolar para o formulário e focar
-                    const formElement = document.getElementById('form-flashcard');
-                    if (formElement) {
-                        formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                    }
-                    document.getElementById('pergunta').focus();
-                });
-            }
-
-            const btnMostrarResposta = div.querySelector('.mostrar-resposta');
-            const respEl = div.querySelector('.resposta');
-
-            if (btnMostrarResposta && respEl) {
+            
+            // Lógica para mostrar/ocultar resposta
+            const btnMostrarResposta = CardDiv.querySelector('.btn-toggle');
+            if (btnMostrarResposta) {
                 btnMostrarResposta.addEventListener('click', () => {
-                    const aberto = div.classList.toggle('mostrar'); // 'mostrar' deve ser uma classe CSS que revela a resposta
+                    const aberto = CardDiv.classList.toggle('mostrar');
                     btnMostrarResposta.textContent = aberto ? '🙈 Ocultar resposta' : '👁️ Mostrar resposta';
                 });
             }
 
-            container.appendChild(div);
+            // CORRIGIDO: Lógica de edição única e correta
+            const botaoEditar = CardDiv.querySelector('.btn-edit');
+            if (botaoEditar) {
+                botaoEditar.addEventListener('click', () => {
+                    prepararEdicaoFlashcard(card); // Usa a função correta
+                    document.getElementById('flashcard-form').scrollIntoView({ behavior: 'smooth' });
+                });
+            }
 
-            if (typeof window.idUltimoFlashcardCriado !== "undefined" && cardData._id === window.idUltimoFlashcardCriado) {
-                div.classList.add('flashcard-destaque');
+            // Adicione aqui a lógica para o botão de deletar, se desejar, seguindo o mesmo padrão.
 
+            container.appendChild(CardDiv);
+
+            // CORRIGIDO: Lógica de destaque usando a variável correta `card`
+            if (typeof window.idUltimoFlashcardModificado !== "undefined" && card._id === window.idUltimoFlashcardModificado) {
+                CardDiv.classList.add('flashcard-destaque');
                 setTimeout(() => {
-                    div.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    setTimeout(() => div.classList.remove('flashcard-destaque'), 2000);
+                    CardDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    setTimeout(() => CardDiv.classList.remove('flashcard-destaque'), 2000);
                 }, 300);
             }
         });
     } catch (erro) {
-        // Garante que o título não seja duplicado em caso de erro
-        const existingTitle = container.querySelector('h2');
-        if (existingTitle) {
-            container.innerHTML = existingTitle.outerHTML + '<p class="erro">Erro ao carregar os flashcards 😥</p>';
-        } else {
-            container.innerHTML = '<h2>🧠 Flashcards cadastrados</h2><p class="erro">Erro ao carregar os flashcards 😥</p>';
-        }
+        container.innerHTML = '<h2>🧠 Flashcards cadastrados</h2><p class="erro">Erro ao carregar os flashcards 😥</p>';
         console.error('Erro ao carregar os flashcards:', erro.message);
     }
 }
@@ -281,6 +260,22 @@ function prepararEdicaoResumo(resumo) {
     document.getElementById('titulo').focus();
 }
 
+function prepararEdicaoFlashcard(flashcard) {
+    const perguntaInput = document.getElementById('pergunta');
+    const respostaInput = document.getElementById('resposta');
+    const tagsInput = document.getElementById('tags-flashcard');
+    const botaoSubmit = document.querySelector('#form-flashcard button[type="submit"]');
+    const botaoCancelar = document.getElementById('cancelar-edicao-flashcard');
+
+    perguntaInput.value = flashcard.pergunta;
+    respostaInput.value = flashcard.resposta;
+    tagsInput.value = flashcard.tags.join(', ');
+
+    idFlashcardEditando = flashcard._id;
+    botaoSubmit.textContent = 'Salvar Edição';
+    botaoCancelar.style.display = 'inline-block';
+}
+
 // Bloco de cadastro de flashcards
 const formFlashcard = document.getElementById('form-flashcard');
 const mensagemFlashcard = document.getElementById('mensagem-flashcard');
@@ -369,6 +364,9 @@ if (formFlashcard) {
             if (submitButton) {
                 submitButton.textContent = 'Salvar Flashcard'; // Restaura texto do botão
             }
+
+            document.getElementById('cancelar-edicao-flashcard').style.display = 'none';
+            
             carregarFlashcards();
 
         } catch (error) {
@@ -382,9 +380,23 @@ if (formFlashcard) {
     });
 }
 
+function configurarFormularioFlashcard() {
+    const form = document.getElementById('form-flashcard');
+    const botaoSubmit = form.querySelector('button[type="submit"]');
+    const botaoCancelar = document.getElementById('cancelar-edicao-flashcard');
+
+    botaoCancelar.addEventListener('click', () => {
+        form.reset();
+        idFlashcardEditando = null;
+        botaoSubmit.textContent = 'Salvar Flashcard';
+        botaoCancelar.style.display = 'none';
+    });
+}
+
 // Inicialização ao carregar a página
 document.addEventListener('DOMContentLoaded', () => {
     configurarFormulario(); // Configura formulário de resumos
+    configurarFormularioFlashcard();
     carregarResumos();
     carregarFlashcards();
     // O event listener para formFlashcard é adicionado globalmente quando o script é lido
