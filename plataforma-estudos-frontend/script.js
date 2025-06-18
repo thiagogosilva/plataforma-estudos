@@ -81,7 +81,6 @@ async function carregarResumos() {
 }
 
 // Função principal para buscar e exibir os flashcards
-// Função principal para buscar e exibir os flashcards
 async function carregarFlashcards() {
     const container = document.getElementById('flashcards-container');
 
@@ -90,18 +89,14 @@ async function carregarFlashcards() {
         if (!resposta.ok) throw new Error('Erro ao buscar flashcards');
         const flashcards = await resposta.json();
 
-        // Limpa o container, mas mantém o título H2
         container.innerHTML = '<h2>🧠 Flashcards cadastrados</h2>';
 
         if (flashcards.length === 0) {
-            const p = document.createElement('p');
-            p.textContent = 'Nenhum flashcard encontrado.';
-            container.appendChild(p);
+            container.innerHTML += '<p>Nenhum flashcard encontrado.</p>';
             return;
         }
 
         flashcards.forEach((card) => {
-            // CORRIGIDO: O nome da variável é CardDiv, não div.
             const CardDiv = document.createElement('div');
             CardDiv.classList.add('flashcard');
 
@@ -116,7 +111,6 @@ async function carregarFlashcards() {
                 </div>
             `;
             
-            // Lógica para mostrar/ocultar resposta
             const btnMostrarResposta = CardDiv.querySelector('.btn-toggle');
             if (btnMostrarResposta) {
                 btnMostrarResposta.addEventListener('click', () => {
@@ -125,26 +119,42 @@ async function carregarFlashcards() {
                 });
             }
 
-            // CORRIGIDO: Lógica de edição única e correta
             const botaoEditar = CardDiv.querySelector('.btn-edit');
             if (botaoEditar) {
                 botaoEditar.addEventListener('click', () => {
-                    prepararEdicaoFlashcard(card); // Usa a função correta
+                    prepararEdicaoFlashcard(card);
                     document.getElementById('flashcard-form').scrollIntoView({ behavior: 'smooth' });
                 });
             }
 
-            // Adicione aqui a lógica para o botão de deletar, se desejar, seguindo o mesmo padrão.
+            const botaoDeletar = CardDiv.querySelector('.btn-delete');
+            if (botaoDeletar) {
+                botaoDeletar.addEventListener('click', async () => {
+                    if (!confirm(`Tem certeza que deseja excluir o flashcard: "${card.pergunta}"?`)) return;
+                    try {
+                        // CORRIGIDO: URL correta com "flashcards" no plural
+                        const resp = await fetch(`http://localhost:5000/flashcards/${card._id}`, { method: 'DELETE' });
+                        if (!resp.ok) throw new Error('Falha ao excluir o flashcard.');
+                        carregarFlashcards();
+                    } catch (erro) {
+                        console.error('Erro ao deletar flashcard:', erro);
+                        alert('Ocorreu um erro ao tentar excluir o flashcard.');
+                    }
+                });
+            }
 
             container.appendChild(CardDiv);
 
-            // CORRIGIDO: Lógica de destaque usando a variável correta `card`
-            if (typeof window.idUltimoFlashcardModificado !== "undefined" && card._id === window.idUltimoFlashcardModificado) {
+            // CORRIGIDO: Lógica de destaque completa e correta
+            if (window.idUltimoFlashcardModificado && card._id === window.idUltimoFlashcardModificado) {
                 CardDiv.classList.add('flashcard-destaque');
+                CardDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 setTimeout(() => {
-                    CardDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    setTimeout(() => CardDiv.classList.remove('flashcard-destaque'), 2000);
-                }, 300);
+                    // CORRIGIDO: Remove a classe em vez de adicionar novamente
+                    CardDiv.classList.remove('flashcard-destaque');
+                    // CORRIGIDO: Limpa a variável para não destacar de novo
+                    window.idUltimoFlashcardModificado = null;
+                }, 2000);
             }
         });
     } catch (erro) {
@@ -156,6 +166,9 @@ async function carregarFlashcards() {
 // Variável de controle para saber se estamos editando
 let idResumoEditando = null;
 let idFlashcardEditando = null;
+
+let idUltimoResumoModificado = null;
+let idUltimoFlashcardModificado = null;
 
 // Configura formulário de resumos para POST ou PUT
 function configurarFormulario() {
@@ -344,7 +357,7 @@ if (formFlashcard) {
                 throw new Error(flashcardSalvo.erro || flashcardSalvo.message || `Erro ao ${idFlashcardEditando ? 'editar' : 'cadastrar'} flashcard`);
             }
 
-            window.idUltimoFlashcardCriado = flashcardSalvo._id; // Usar idUltimoFlashcardModificado seria semanticamente melhor para edição, mas mantido nome original
+            window.idUltimoFlashcardModificado = flashcardSalvo._id;
 
             if (mensagemFlashcard) {
                 mensagemFlashcard.textContent = idFlashcardEditando ? 'Flashcard editado com sucesso!' : 'Flashcard cadastrado com sucesso!';
