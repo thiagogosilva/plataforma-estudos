@@ -375,7 +375,7 @@ if (formFlashcard) {
             idFlashcardEditando = null; // Reseta o ID de edição
             const submitButton = formFlashcard.querySelector('button[type="submit"]');
             if (submitButton) {
-                submitButton.textContent = 'Salvar Flashcard'; // Restaura texto do botão
+                submitButton.textContent = 'Cadastrar Flashcard'; // Restaura texto do botão
             }
 
             document.getElementById('cancelar-edicao-flashcard').style.display = 'none';
@@ -401,7 +401,7 @@ function configurarFormularioFlashcard() {
     botaoCancelar.addEventListener('click', () => {
         form.reset();
         idFlashcardEditando = null;
-        botaoSubmit.textContent = 'Salvar Flashcard';
+        botaoSubmit.textContent = 'Cadastrar Flashcard';
         botaoCancelar.style.display = 'none';
     });
 }
