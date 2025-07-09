@@ -1,3 +1,23 @@
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toast-container');
+    const toast = document.createElement('div');
+    toast.classList.add('toast', type);
+    toast.textContent = message;
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.classList.add('show')
+    }, 100);
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+
+        toast.addEventListener('transitionend', () => {
+            toast.remove();
+        });
+    }, 3000);
+}
+
 // Função principal para buscar e exibir os resumos
 async function carregarResumos() {
     const container = document.getElementById('resumos-container');
@@ -44,17 +64,12 @@ async function carregarResumos() {
                         const resp = await fetch(`http://localhost:5000/resumos/${resumo._id}`, { method: 'DELETE' });
                         if (!resp.ok) throw new Error('Erro ao excluir resumo.');
 
-                        const mensagem = document.getElementById('mensagem-status');
-                        if (mensagem) {
-                            mensagem.textContent = 'Resumo excluído com sucesso!';
-                            mensagem.style.color = 'green';
-                            setTimeout(() => { mensagem.textContent = ''; }, 3000);
-                        }
+                    showToast('Resumo excluído com sucesso!', 'success');
+
                         carregarResumos(); // Recarrega a lista de resumos
 
                     } catch (erro) {
-                        console.error('Erro ao excluir:', erro.message);
-                        alert('Erro ao excluir o resumo.');
+                        showToast(`Erro ao excluir resumo: ${erro.message}`, 'error');
                     }
                 });
             }
@@ -132,13 +147,17 @@ async function carregarFlashcards() {
                 botaoDeletar.addEventListener('click', async () => {
                     if (!confirm(`Tem certeza que deseja excluir o flashcard: "${card.pergunta}"?`)) return;
                     try {
-                        // CORRIGIDO: URL correta com "flashcards" no plural
                         const resp = await fetch(`http://localhost:5000/flashcards/${card._id}`, { method: 'DELETE' });
                         if (!resp.ok) throw new Error('Falha ao excluir o flashcard.');
-                        carregarFlashcards();
+                        
+                        showToast('Flashcard excluído com sucesso!', 'success');
+                        
+                        setTimeout(() => {
+                            carregarFlashcards();
+                        }, 300);
+                        
                     } catch (erro) {
-                        console.error('Erro ao deletar flashcard:', erro);
-                        alert('Ocorreu um erro ao tentar excluir o flashcard.');
+                        showToast(`Erro ao excluir flashcard: ${erro.message}`, 'error');
                     }
                 });
             }
@@ -186,10 +205,7 @@ function configurarFormulario() {
         const tags = tagsTexto ? tagsTexto.split(',').map(t => t.trim()) : [];
 
         if (!titulo || !conteudo) {
-            if (mensagem) {
-                mensagem.textContent = 'Preencha todos os campos obrigatórios.';
-                mensagem.style.color = 'red';
-            }
+            showToast('Preencha todos os campos obrigatórios.', 'error');
             return;
         }
 
@@ -212,13 +228,10 @@ function configurarFormulario() {
             }
 
 
-            if (mensagem) {
-                mensagem.textContent = idResumoEditando
-                    ? 'Resumo editado com sucesso!'
-                    : 'Resumo cadastrado com sucesso!';
-                mensagem.style.color = 'green';
-                setTimeout(() => { mensagem.textContent = ''; }, 3000);
-            }
+        showToast(
+            idResumoEditando ? 'Resumo editado com sucesso!' : 'Resumo cadastrado com sucesso!',
+            'success'
+        );
 
             window.idUltimoResumoModificado = resumoSalvo._id;
 
@@ -231,10 +244,8 @@ function configurarFormulario() {
 
         } catch (erro) {
             console.error(erro);
-            if (mensagem) {
-                mensagem.textContent = erro.message;
-                mensagem.style.color = 'red';
-            }
+            showToast(`Erro ao ${idResumoEditando ? 'editar' : 'cadastrar'} resumo: ${erro.message}`, 'error');
+        
         }
     });
 
@@ -243,7 +254,7 @@ function configurarFormulario() {
             form.reset();
             idResumoEditando = null;
             if (botao) botao.textContent = 'Cadastrar Resumo';
-            if (mensagem) mensagem.textContent = '';
+            
             cancelarBtn.style.display = 'none';
         });
     }
@@ -303,11 +314,7 @@ if (formFlashcard) {
         const tagsArray = tagsString ? tagsString.split(',').map(tag => tag.trim()) : [];
 
         if (!pergunta || !resposta) {
-            if (mensagemFlashcard) {
-                mensagemFlashcard.textContent = 'Preencha todos os campos obrigatórios.';
-                mensagemFlashcard.style.color = 'red';
-                mensagemFlashcard.style.display = 'block';
-            }
+            showToast('Preencha todos os campos obrigatórios.', 'error');
             document.getElementById('pergunta').focus();
             return;
         }
@@ -326,17 +333,7 @@ if (formFlashcard) {
             );
 
             if (jaExiste) {
-                if (mensagemFlashcard) {
-                    mensagemFlashcard.textContent = 'Essa pergunta já foi cadastrada em outro flashcard.';
-                    mensagemFlashcard.style.color = 'red';
-                    mensagemFlashcard.style.display = 'block';
-                    setTimeout(() => {
-                        if (mensagemFlashcard) {
-                            mensagemFlashcard.style.display = 'none';
-                            mensagemFlashcard.textContent = '';
-                        }
-                    }, 3000);
-                }
+                showToast('Já existe um flashcard com essa pergunta.', 'error');
                 document.getElementById('pergunta').focus();
                 return;
             }
@@ -359,17 +356,9 @@ if (formFlashcard) {
 
             window.idUltimoFlashcardModificado = flashcardSalvo._id;
 
-            if (mensagemFlashcard) {
-                mensagemFlashcard.textContent = idFlashcardEditando ? 'Flashcard editado com sucesso!' : 'Flashcard cadastrado com sucesso!';
-                mensagemFlashcard.style.color = 'green';
-                mensagemFlashcard.style.display = 'block';
-                setTimeout(() => {
-                    if (mensagemFlashcard) {
-                        mensagemFlashcard.style.display = 'none';
-                        mensagemFlashcard.textContent = '';
-                    }
-                }, 3000);
-            }
+            showToast(
+                idFlashcardEditando ? 'Flashcard editado com sucesso!' : 'Flashcard cadastrado com sucesso!',
+                'success');
 
             formFlashcard.reset();
             idFlashcardEditando = null; // Reseta o ID de edição
@@ -385,9 +374,7 @@ if (formFlashcard) {
         } catch (error) {
             console.error('Cadastro/Edição de flashcard falhou:', error);
             if (mensagemFlashcard) {
-                mensagemFlashcard.textContent = error.message;
-                mensagemFlashcard.style.color = 'red';
-                mensagemFlashcard.style.display = 'block';
+                showToast(`Erro ao ${idFlashcardEditando ? 'editar' : 'cadastrar'} flashcard: ${error.message}`, 'error');
             }
         }
     });
