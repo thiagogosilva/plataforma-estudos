@@ -39,14 +39,39 @@ async function carregarResumos() {
 
             card._id = resumo._id;
 
+            const limiteCaracteres = 250;
+            let conteudoHtml = `<p class="resumo-conteudo">${resumo.conteudo}</p>`;
+            let precisaDeBotao = resumo.conteudo.length > limiteCaracteres;
+
+            if (precisaDeBotao) {
+                conteudoHtml = `<p class="resumo-conteudo truncado">${resumo.conteudo}</p>
+                                <button class="btn-mostrar-mais">Mostrar mais</button>`;
+            }
+
             card.innerHTML = `
                 <h2>${resumo.titulo}</h2>
-                <p>${resumo.conteudo}</p>
+                ${conteudoHtml}
                 <small>Tags: ${Array.isArray(resumo.tags) && resumo.tags.length > 0 ? resumo.tags.join(', ') : 'Sem tags'}</small>
                 <div class="card-actions">
                     <button class="btn-edit">✏️ Editar</button>
                     <button class="btn-delete">🗑️ Excluir</button>
             `;
+
+            if (precisaDeBotao) {
+                const btnMostrarMais = card.querySelector('.btn-mostrar-mais');
+                const conteudoP = card.querySelector('.resumo-conteudo');
+
+                btnMostrarMais.addEventListener('click', () => {
+                    conteudoP.classList.toggle('truncado');
+
+                    if (conteudoP.classList.contains('truncado')) {
+                        btnMostrarMais.textContent = 'Mostrar mais';
+                    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    } else {
+                        btnMostrarMais.textContent = 'Mostrar menos';
+                    }
+                });
+            }
 
             // Botão editar
             const editarBtn = card.querySelector('.btn-edit');
@@ -209,6 +234,11 @@ function configurarFormulario() {
             return;
         }
 
+        const textoOriginalBotao = botao.textContent;
+
+        botao.disabled = true;
+        botao.textContent = 'Salvando...';
+
         try {
             const url = idResumoEditando
                 ? `http://localhost:5000/resumos/${idResumoEditando}`
@@ -244,8 +274,11 @@ function configurarFormulario() {
 
         } catch (erro) {
             console.error(erro);
-            showToast(`Erro ao ${idResumoEditando ? 'editar' : 'cadastrar'} resumo: ${erro.message}`, 'error');
-        
+            showToast(erro.message, 'error');
+
+            botao.textContent = textoOriginalBotao;
+        } finally {
+            botao.disabled = false;
         }
     });
 
@@ -308,6 +341,8 @@ if (formFlashcard) {
     formFlashcard.addEventListener('submit', async (e) => {
         e.preventDefault();
 
+        const submitButton = formFlashcard.querySelector('button[type="submit"]');
+
         const pergunta = document.getElementById('pergunta').value.trim();
         const resposta = document.getElementById('resposta').value.trim();
         const tagsString = document.getElementById('tags-flashcard').value.trim();
@@ -318,6 +353,11 @@ if (formFlashcard) {
             document.getElementById('pergunta').focus();
             return;
         }
+
+        const textoOriginalBotao = submitButton.textContent;
+
+        submitButton.disabled = true;
+        submitButton.textContent = 'Salvando...';
 
         try {
             // Verificar duplicidade
@@ -333,9 +373,7 @@ if (formFlashcard) {
             );
 
             if (jaExiste) {
-                showToast('Já existe um flashcard com essa pergunta.', 'error');
-                document.getElementById('pergunta').focus();
-                return;
+                throw new Error('Já existe um flashcard com essa pergunta.');
             }
 
             const url = idFlashcardEditando
@@ -369,13 +407,17 @@ if (formFlashcard) {
 
             document.getElementById('cancelar-edicao-flashcard').style.display = 'none';
             
+            setTimeout(() => carregarFlashcards(), 300);
+            
             carregarFlashcards();
 
         } catch (error) {
             console.error('Cadastro/Edição de flashcard falhou:', error);
-            if (mensagemFlashcard) {
-                showToast(`Erro ao ${idFlashcardEditando ? 'editar' : 'cadastrar'} flashcard: ${error.message}`, 'error');
-            }
+            showToast(error.message, 'error');
+
+            submitButton.textContent = textoOriginalBotao; // Restaura texto do botão
+        } finally {
+            submitButton.disabled = false;
         }
     });
 }
