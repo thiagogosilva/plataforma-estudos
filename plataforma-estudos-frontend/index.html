@@ -40,6 +40,10 @@
 
         <p class="subtitulo-resumos">📝 Veja abaixo os resumos cadastrados:</p>
 
+        <div class="search-container">
+            <input type="text" id="filtro-resumos" class="filtro-input" placeholder="🔍 Buscar por títulos ou palavra-chave..." />
+        </div>
+
         <section id="resumos-container">
             <p class="loading">🔁 Carregando resumos...</p>
         </section>
@@ -62,6 +66,10 @@
             </form>
         </section>
 
+        <div class="search-container">
+            <input type="text" id="filtro-flashcards" class="filtro-input" placeholder="🔎 Buscar por pergunta ou resposta..." />
+        </div>
+
         <section id="flashcards-container">
             <h2>🧠 Flashcards cadastrados</h2>
             <p class="loading">🔁 Carregando flashcards...</p>
@@ -71,7 +79,9 @@
     <footer>
         <p>Desenvolvido no Desafio 90 Dias DEV</p>
     </footer>
-    
+
+    <button id="btn-voltar-ao-topo" title="Voltar ao topo">&#8679;</button>
+
     <div id="toast-container"></div>
     <script src="script.js"></script>
 </body>

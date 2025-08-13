@@ -423,3 +423,66 @@ margin-right: 10px; /* Adiciona um espaço à direita de cada botão */
 .btn-mostrar-mais:hover {
     text-decoration: underline;
 }
+
+/* ==== Estilos para o Campo de Busca ==== */
+
+.search-container {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+}
+
+.filtro-input {
+    width: 100%;
+    max-width: 600px;
+    padding: 12px 15px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease-in-out;
+}
+
+.filtro-input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+/* ==== Estilos para o Botão Voltar ao Topo ==== */
+
+#btn-voltar-ao-topo {
+    display: block;
+    position: fixed; /* Fica fixo na tela durante o scroll */
+    bottom: 20px;
+    right: 30px;
+    z-index: 99; /* Garante que fique sobre outros elementos */
+
+    border: none;
+    outline: none;
+    background-color: #007bff;
+    color: white;
+    cursor: pointer;
+
+    padding: 0;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%; /* Deixa o botão redondo */
+    font-size: 24px;
+    font-weight: bold;
+
+    opacity: 0; /* Começa invisível */
+    visibility: hidden; /* Começa escondido */
+    transform: translateY(100px); /* Começa um pouco para baixo */
+    transition: all 0.3s ease-in-out; /* Transição suave */
+}
+
+/* Classe que será adiconada via JS para mostrar o botão */
+#btn-voltar-ao-topo.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0); /* Volta para a posição original */
+}
+
+#btn-voltar-ao-topo:hover {
+    background-color: #0056b3;
+}

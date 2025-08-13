@@ -435,10 +435,74 @@ function configurarFormularioFlashcard() {
     });
 }
 
+function configurarFiltroResumos() {
+    const filtroInput = document.getElementById('filtro-resumos');
+    filtroInput.addEventListener('input', () => {
+        const termoBusca = filtroInput.value.trim().toLowerCase();
+        const resumosCards = document.querySelectorAll('.resumo-card');
+
+        resumosCards.forEach(card => {
+            const titulo = card.querySelector('h2').textContent.toLowerCase();
+            const conteudo = card.querySelector('p').textContent.toLowerCase();
+
+            if (titulo.includes(termoBusca) || conteudo.includes(termoBusca)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+}
+
+function configurarFiltroFlashcards() {
+    const filtroInput = document.getElementById('filtro-flashcards');
+    filtroInput.addEventListener('input', () => {
+        const termoBusca = filtroInput.value.trim().toLowerCase();
+        const flashcards = document.querySelectorAll('.flashcard');
+
+        flashcards.forEach(card => {
+            const perguntaEl = card.querySelector('p');
+            const respostaEl = card.querySelector('p.resposta');
+
+            const pergunta = perguntaEl ? perguntaEl.textContent.toLowerCase() : '';
+            const resposta = respostaEl ? respostaEl.textContent.toLowerCase() : '';
+
+            if (pergunta.includes(termoBusca) || resposta.includes(termoBusca)) {
+                card.style.display = 'block';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+}
+
+function configurarBotaoVoltarAoTopo() {
+    const btn = document.getElementById('btn-voltar-ao-topo');
+    if (!btn) return; // Se o botão não existir, nao faz nada
+
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 300) {
+            btn.classList.add('show'); // Mostra o botão
+        } else {
+            btn.classList.remove('show'); // Esconde o botão
+        }
+    });
+
+    btn.addEventListener('click', () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth' // Faz a rolagem ser suave e animada
+        });
+    });
+}
+
 // Inicialização ao carregar a página
 document.addEventListener('DOMContentLoaded', () => {
     configurarFormulario(); // Configura formulário de resumos
     configurarFormularioFlashcard();
+    configurarFiltroResumos();
+    configurarFiltroFlashcards();
+    configurarBotaoVoltarAoTopo();
     carregarResumos();
     carregarFlashcards();
     // O event listener para formFlashcard é adicionado globalmente quando o script é lido
